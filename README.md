@@ -1,8 +1,20 @@
-# TrafficLens — South African Traffic Management Portal
+# TrafficLens — South African Traffic Management Portal (Front-End Prototype)
+
+## Why I built this
+
+My aunt lost her purse — and with it, her physical driver’s licence. I knew the traffic department holds a national database of licence records, and I thought: *why can’t someone just query this to check if a licence is valid, without needing the physical card?*
+
+I started exploring the idea as a **Python + SQLite backend proof-of-concept**, because that stack is perfect for a lightweight, pre-production validation of the concept. While researching the problem, I discovered something interesting: this actually sits inside a **national infrastructure project** — meaning the thing I was building independently lives in the exact same problem space as a real government initiative.
+
+**This repository is the front-end simulation I built to explore what the user experience should look like.** It’s a fully clickable prototype that simulates every interaction — from licence verification to fine payment to live map-based enforcement — but all data is hardcoded, and there is no backend. The actual Python/SQLite backend is a separate work-in-progress. I built this frontend prototype to nail the UX, visual design, and state management before wiring up a real API.
+
+---
 
 ## Overview
 
-TrafficLens is a comprehensive traffic enforcement and citizen service platform built for South Africa. It provides a dual-purpose interface: a **Citizen Portal** for drivers to manage licenses, vehicles, and fines, and an **Admin Console** for law enforcement officers to monitor violations, verify documents, and manage roadblocks.
+TrafficLens is a comprehensive traffic enforcement and citizen service platform concept built for South Africa. It provides a dual-purpose interface: a **Citizen Portal** for drivers to manage licenses, vehicles, and fines, and an **Admin Console** for law enforcement officers to monitor violations, verify documents, and manage roadblocks.
+
+**Important:** This is a purely front-end project. All authentication, payments, licence data, fines, and map vehicles are simulated using static demo data and client-side state (Zustand + sessionStorage). No real user data is processed, and there is no live database or API.
 
 Built with **React**, **Tailwind CSS**, **Framer Motion**, **Zustand**, and **Leaflet**, the application features a fully responsive design with mobile-first layouts, dark-themed admin interface, and real-time map simulations.
 
@@ -16,14 +28,14 @@ Built with **React**, **Tailwind CSS**, **Framer Motion**, **Zustand**, and **Le
 | Vite | Build tool |
 | Tailwind CSS 4 | Styling |
 | React Router 6 | Routing |
-| Zustand | State management |
+| Zustand | State management (simulated backend state) |
 | Framer Motion | Animations |
-| Leaflet / React-Leaflet | Interactive maps |
+| Leaflet / React-Leaflet | Interactive maps with dark tiles |
 | Lucide React | Icons |
 
 ---
 
-## Features
+## Features (all simulated)
 
 ### 🔐 Authentication
 
@@ -235,79 +247,49 @@ Built with **React**, **Tailwind CSS**, **Framer Motion**, **Zustand**, and **Le
 
 ---
 
-## 🗺️ Map Data
-
-### Hotspot Areas
-| Area | Tickets | Revenue |
-|------|---------|---------|
-| Sandton CBD | 342 | R513,000 |
-| M1 Corridor | 310 | R465,000 |
-| Fourways | 289 | R433,500 |
-| Rosebank | 256 | R384,000 |
-| Bryanston | 234 | R351,000 |
-| Randburg | 198 | R297,000 |
-| Parktown | 178 | R267,000 |
-| Midrand | 145 | R217,500 |
-
-### Vehicle Routes
-- N1 North/Southbound (3 vehicles)
-- M1 through Sandton (2 vehicles + 1 police)
-- William Nicol Drive (2 vehicles)
-- Oxford Road, Rosebank (2 vehicles)
-- Rivonia Road, Sandton (2 vehicles)
-- Sandton CBD Loop (4 vehicles + 1 police)
-- Rosebank Zone (3 vehicles + 1 police)
-- Fourways Mall (2 vehicles)
-- Bryanston Drive (2 vehicles)
-- Parktown Road (1 vehicle)
-- Randburg Main (2 vehicles)
-- Midrand Industrial (2 vehicles)
-
----
 
 ## 📦 Project Structure
 
 src/
 ├── components/
-│ ├── admin/
-│ │ └── PlanRoadblockModal.jsx
-│ ├── citizen/
-│ │ ├── FinesList.jsx
-│ │ ├── LicenseCard.jsx
-│ │ ├── NotificationsModal.jsx
-│ │ ├── PaymentModal.jsx
-│ │ ├── RenewalModal.jsx
-│ │ └── StatsCards.jsx
-│ └── layout/
-│ ├── AdminLayout.jsx
-│ └── CitizenLayout.jsx
+│   ├── admin/
+│   │   └── PlanRoadblockModal.jsx
+│   ├── citizen/
+│   │   ├── FinesList.jsx
+│   │   ├── LicenseCard.jsx
+│   │   ├── NotificationsModal.jsx
+│   │   ├── PaymentModal.jsx
+│   │   ├── RenewalModal.jsx
+│   │   └── StatsCards.jsx
+│   └── layout/
+│       ├── AdminLayout.jsx
+│       └── CitizenLayout.jsx
 ├── data/
-│ ├── adminData.js
-│ ├── demoUser.js
-│ └── notifications.js
+│   ├── adminData.js
+│   ├── demoUser.js
+│   └── notifications.js
 ├── pages/
-│ ├── admin/
-│ │ ├── ActivityLog.jsx
-│ │ ├── LiveMap.jsx
-│ │ ├── Offenders.jsx
-│ │ ├── Reports.jsx
-│ │ ├── Roadblocks.jsx
-│ │ └── Verify.jsx
-│ ├── citizen/
-│ │ ├── Dashboard.jsx
-│ │ ├── Documents.jsx
-│ │ ├── License.jsx
-│ │ ├── Profile.jsx
-│ │ ├── Settings.jsx
-│ │ └── Vehicles.jsx
-│ └── Landing.jsx
+│   ├── admin/
+│   │   ├── ActivityLog.jsx
+│   │   ├── LiveMap.jsx
+│   │   ├── Offenders.jsx
+│   │   ├── Reports.jsx
+│   │   ├── Roadblocks.jsx
+│   │   └── Verify.jsx
+│   ├── citizen/
+│   │   ├── Dashboard.jsx
+│   │   ├── Documents.jsx
+│   │   ├── License.jsx
+│   │   ├── Profile.jsx
+│   │   ├── Settings.jsx
+│   │   └── Vehicles.jsx
+│   └── Landing.jsx
 ├── store/
-│ ├── authStore.js
-│ └── paymentStore.js
+│   ├── authStore.js
+│   └── paymentStore.js
 ├── App.jsx
 ├── main.jsx
 └── index.css
-
 
 ---
 
@@ -325,3 +307,4 @@ npm run build
 
 # Preview production build
 npm run preview
+
