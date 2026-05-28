@@ -250,6 +250,8 @@ Built with **React**, **Tailwind CSS**, **Framer Motion**, **Zustand**, and **Le
 
 ## 📦 Project Structure
 
+```
+
 src/
 ├── components/
 │   ├── admin/
@@ -290,7 +292,7 @@ src/
 ├── App.jsx
 ├── main.jsx
 └── index.css
-
+```
 ---
 
 ## 🚀 Getting Started
