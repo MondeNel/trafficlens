@@ -2,11 +2,11 @@
 
 ## Why I built this
 
-My aunt lost her purse — and with it, her physical driver’s licence. I knew the traffic department holds a national database of licence records, and I thought: *why can’t someone just query this to check if a licence is valid, without needing the physical card?*
+My aunt lost her purse — and with it, her physical driver's licence. I knew the traffic department holds a national database of licence records, and I thought: *why can't someone just query this to check if a licence is valid, without needing the physical card?*
 
 I started exploring the idea as a **Python + SQLite backend proof-of-concept**, because that stack is perfect for a lightweight, pre-production validation of the concept. While researching the problem, I discovered something interesting: this actually sits inside a **national infrastructure project** — meaning the thing I was building independently lives in the exact same problem space as a real government initiative.
 
-**This repository is the front-end simulation I built to explore what the user experience should look like.** It’s a fully clickable prototype that simulates every interaction — from licence verification to fine payment to live map-based enforcement — but all data is hardcoded, and there is no backend. The actual Python/SQLite backend is a separate work-in-progress. I built this frontend prototype to nail the UX, visual design, and state management before wiring up a real API.
+**This repository is the front-end simulation I built to explore what the user experience should look like.** It's a fully clickable prototype that simulates every interaction — from licence verification to fine payment to live map-based enforcement — but all data is hardcoded, and there is no backend. The actual Python/SQLite backend is a separate work-in-progress. I built this frontend prototype to nail the UX, visual design, and state management before wiring up a real API.
 
 ---
 
@@ -247,11 +247,9 @@ Built with **React**, **Tailwind CSS**, **Framer Motion**, **Zustand**, and **Le
 
 ---
 
-
 ## 📦 Project Structure
 
 ```
-
 src/
 ├── components/
 │   ├── admin/
@@ -293,6 +291,7 @@ src/
 ├── main.jsx
 └── index.css
 ```
+
 ---
 
 ## 🚀 Getting Started
@@ -309,4 +308,52 @@ npm run build
 
 # Preview production build
 npm run preview
+```
 
+---
+
+## ⚠️ Disclaimer
+
+TrafficLens is an independent portfolio and educational project created to explore digital traffic management workflows, digital licensing systems, enforcement operations, and citizen-facing government services.
+
+This project is not affiliated with, endorsed by, or associated with the South African Government, RTMC, AARTO, eNaTIS, SAPS, municipal traffic departments, or any other public authority.
+
+All records, users, vehicles, fines, locations, and enforcement activities displayed within the application are fictional and used solely for demonstration purposes.
+
+---
+
+# 🎥 Application Demonstrations
+
+## 👤 Citizen Portal
+
+Experience the complete citizen journey:
+
+* Login & Registration
+* Digital Driver's Licence
+* Vehicle Management
+* Fine Payments
+* Licence Renewal
+* Notifications & Alerts
+* Profile & Settings Management
+
+### ▶️ Citizen Portal Demo
+
+https://github.com/user-attachments/assets/b124ec4a-19f5-4d5c-b321-9f19b933756a
+
+---
+
+## 🛡️ Admin Console
+
+Explore the law enforcement and administration experience:
+
+* Live Traffic Monitoring
+* Driver Verification
+* Offender Management
+* Roadblock Planning
+* Incident Tracking
+* Analytics & Reporting
+* Operational Activity Logs
+
+### ▶️ Admin Console Demo
+
+https://github.com/user-attachments/assets/5c86c41b-2d78-4d44-bbc6-de67fadb6abf
