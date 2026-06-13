@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import CitizenLayout from '../../components/layout/CitizenLayout';
+import PaymentModal from '../../components/citizen/PaymentModal';
 import Skeleton from '../../components/ui/Skeleton';
 import demoUser from '../../data/demoUser';
 
@@ -9,13 +11,19 @@ const STEPS = [
   { id: 2, title: 'Personal Info' },
   { id: 3, title: 'Vehicle Class' },
   { id: 4, title: 'Declaration' },
-  { id: 5, title: 'Review & Confirm' } 
+  { id: 5, title: 'Review & Confirm' }
 ];
 
 const Documents = () => {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [currentStep, setCurrentStep] = useState(1);
-  
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
+  const [paymentItem, setPaymentItem] = useState(null);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+
   // State management mapping exactly to the DL1 South African Form fields
   const [formData, setFormData] = useState({
     transactionType: 'driving_licence',
@@ -36,9 +44,9 @@ const Documents = () => {
     agreesToTerms: false
   });
 
-  useEffect(() => { 
-    const t = setTimeout(() => setIsLoading(false), 600); 
-    return () => clearTimeout(t); 
+  useEffect(() => {
+    const t = setTimeout(() => setIsLoading(false), 600);
+    return () => clearTimeout(t);
   }, []);
 
   const handleInputChange = (e) => {
@@ -51,10 +59,39 @@ const Documents = () => {
 
   const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, STEPS.length));
   const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
-  
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert('Application submitted successfully!');
+    setIsSubmitted(true);
+  };
+
+  const handlePayNow = () => {
+    setPaymentItem({
+      id: 'renewal-' + Date.now(),
+      fine_type: 'license_renewal',
+      description: `Driver's License Renewal Application (Class ${formData.vehicleClass || 'B'})`,
+      amount: 200,
+      location: 'TrafficLens Online Portal',
+      plate_number: null
+    });
+    setShowPayment(true);
+  };
+
+  const handlePaymentComplete = async (fineId) => {
+    // Simulate payment processing delay
+    setIsProcessingPayment(true);
+    setShowPayment(false);
+    
+    // Simulate backend processing
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    setIsProcessingPayment(false);
+    setPaymentSuccess(true);
+    
+    // Redirect to dashboard after 2.5 seconds
+    setTimeout(() => {
+      navigate('/dashboard');
+    }, 2500);
   };
 
   // Human-readable labels used in Step 1 and Step 5 Review
@@ -74,10 +111,119 @@ const Documents = () => {
   // Helper calculation to check if any medical flags are currently active
   const hasMedicalFlags = formData.hasEpilepsy || formData.hasGiddiness || formData.hasMentalIllness || formData.hasDiabetes || formData.hasDefectiveVision;
 
+  // Payment success screen
+  if (paymentSuccess) {
+    return (
+      <CitizenLayout user={demoUser}>
+        <div className="flex flex-col items-center justify-center py-12 px-4 max-w-md mx-auto">
+          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
+            <svg viewBox="0 0 24 24" className="w-8 h-8 stroke-emerald-500 fill-none" strokeWidth="2">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <h2 className="text-lg font-bold text-slate-900 mb-2">Payment Successful!</h2>
+          <p className="text-sm text-slate-500 mb-6 text-center">
+            Your driving licence application and payment have been processed. You will be redirected shortly.
+          </p>
+
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 w-full mb-4">
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-slate-500">Amount Paid</span>
+              <span className="font-bold text-emerald-600">R 200.00</span>
+            </div>
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-slate-500">Reference Number</span>
+              <span className="font-mono text-ca font-medium">DL-{Date.now().toString(36).toUpperCase()}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-500">Status</span>
+              <span className="text-emerald-600 font-medium">Completed</span>
+            </div>
+          </div>
+
+          <div className="w-8 h-8 border-4 border-slate-200 border-t-ca rounded-full animate-spin mb-2" />
+          <p className="text-xs text-slate-400">Redirecting to dashboard...</p>
+        </div>
+      </CitizenLayout>
+    );
+  }
+
+  // Payment processing screen
+  if (isProcessingPayment) {
+    return (
+      <CitizenLayout user={demoUser}>
+        <div className="flex flex-col items-center justify-center py-12 px-4 max-w-md mx-auto">
+          <div className="w-16 h-16 border-4 border-slate-200 border-t-ca rounded-full animate-spin mb-4" />
+          <h2 className="text-lg font-bold text-slate-900 mb-2">Processing Payment</h2>
+          <p className="text-sm text-slate-500 mb-6 text-center">
+            Please wait while we process your payment of R 200.00.
+          </p>
+        </div>
+      </CitizenLayout>
+    );
+  }
+
+  // Success message after submission (awaiting payment)
+  if (isSubmitted) {
+    return (
+      <CitizenLayout user={demoUser}>
+        <div className="flex flex-col items-center justify-center py-12 px-4 max-w-md mx-auto">
+          <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mb-4">
+            <svg viewBox="0 0 24 24" className="w-8 h-8 stroke-emerald-500 fill-none" strokeWidth="2">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
+          </div>
+          <h2 className="text-lg font-bold text-slate-900 mb-2">Application Submitted!</h2>
+          <p className="text-sm text-slate-500 mb-6 text-center">
+            Your driving licence application has been received. You need to pay the renewal fee to finalise the process.
+          </p>
+
+          <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 w-full mb-6">
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-slate-500">Licence Renewal Fee</span>
+              <span className="font-bold text-slate-900">R 200.00</span>
+            </div>
+            <div className="flex justify-between text-sm mb-2">
+              <span className="text-slate-500">Reference Number</span>
+              <span className="font-mono text-ca font-medium">DL-{Date.now().toString(36).toUpperCase()}</span>
+            </div>
+            <div className="flex justify-between text-sm">
+              <span className="text-slate-500">Status</span>
+              <span className="text-amber-600 font-medium">Awaiting Payment</span>
+            </div>
+          </div>
+
+          <button
+            onClick={handlePayNow}
+            className="w-full py-3 bg-ca text-white rounded-xl text-sm font-bold hover:bg-ca-dark transition-colors shadow-sm"
+          >
+            Pay R 200.00
+          </button>
+
+          <button
+            onClick={() => setIsSubmitted(false)}
+            className="w-full py-2 text-slate-500 text-sm mt-2 hover:text-slate-700"
+          >
+            ← Back to application
+          </button>
+        </div>
+
+        {/* Payment Modal */}
+        <PaymentModal
+          isOpen={showPayment}
+          onClose={() => setShowPayment(false)}
+          fine={paymentItem}
+          onPay={handlePaymentComplete}
+          isProcessing={false}
+        />
+      </CitizenLayout>
+    );
+  }
+
   return (
     <CitizenLayout user={demoUser}>
       <div className="flex flex-col gap-6 max-w-2xl mx-auto">
-        
+
         {/* Title Headers */}
         <div>
           <h1 className="text-lg font-semibold text-slate-900" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
@@ -94,7 +240,7 @@ const Documents = () => {
           </div>
         ) : (
           <div className="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-            
+
             {/* Progress Tracker Bar */}
             <div className="bg-slate-50 border-b border-slate-200 px-6 py-4">
               <div className="flex items-center justify-between mb-2">
@@ -102,8 +248,8 @@ const Documents = () => {
                 <span className="text-xs text-slate-500 font-medium">{STEPS[currentStep - 1].title}</span>
               </div>
               <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-                <div 
-                  className="bg-ca h-1.5 transition-all duration-300" 
+                <div
+                  className="bg-ca h-1.5 transition-all duration-300"
                   style={{ width: `${(currentStep / STEPS.length) * 100}%` }}
                 />
               </div>
@@ -111,7 +257,7 @@ const Documents = () => {
 
             {/* Form Canvas */}
             <form onSubmit={handleSubmit} className="p-6 space-y-6">
-              
+
               {/* STEP 1: TRANSACTION TYPE */}
               {currentStep === 1 && (
                 <div className="space-y-4">
@@ -119,11 +265,11 @@ const Documents = () => {
                   <div className="grid grid-cols-1 gap-2">
                     {Object.entries(txLabels).map(([id, label]) => (
                       <label key={id} className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${formData.transactionType === id ? 'border-ca bg-ca-light/30 text-ca' : 'border-slate-200 hover:bg-slate-50'}`}>
-                        <input 
-                          type="radio" 
-                          name="transactionType" 
-                          value={id} 
-                          checked={formData.transactionType === id} 
+                        <input
+                          type="radio"
+                          name="transactionType"
+                          value={id}
+                          checked={formData.transactionType === id}
                           onChange={handleInputChange}
                           className="text-ca focus:ring-ca h-4 w-4"
                         />
@@ -218,7 +364,7 @@ const Documents = () => {
               {currentStep === 4 && (
                 <div className="space-y-4">
                   <h2 className="text-sm font-medium text-slate-900">Section D: Medical Declaration</h2>
-                  
+
                   <div className="space-y-2 border-b border-slate-100 pb-4">
                     {[
                       { id: 'hasEpilepsy', label: 'Uncontrolled Epilepsy' },
@@ -228,12 +374,12 @@ const Documents = () => {
                       { id: 'hasDefectiveVision', label: 'Defective Vision' }
                     ].map((med) => (
                       <label key={med.id} className="flex items-start gap-3 cursor-pointer py-1">
-                        <input 
-                          type="checkbox" 
-                          name={med.id} 
-                          checked={formData[med.id]} 
+                        <input
+                          type="checkbox"
+                          name={med.id}
+                          checked={formData[med.id]}
                           onChange={handleInputChange}
-                          className="mt-0.5 rounded text-ca focus:ring-ca h-3.5 w-3.5 border-slate-300" 
+                          className="mt-0.5 rounded text-ca focus:ring-ca h-3.5 w-3.5 border-slate-300"
                         />
                         <span className="text-xs text-slate-600">{med.label}</span>
                       </label>
@@ -241,10 +387,10 @@ const Documents = () => {
 
                     {/* Dynamic None of the Above Switcher */}
                     <label className="flex items-start gap-3 cursor-pointer py-1 pt-2 border-t border-slate-100 mt-2">
-                      <input 
-                        type="checkbox" 
+                      <input
+                        type="checkbox"
                         name="noneOfAbove"
-                        checked={!hasMedicalFlags} 
+                        checked={!hasMedicalFlags}
                         onChange={() => {
                           setFormData(prev => ({
                             ...prev,
@@ -255,7 +401,7 @@ const Documents = () => {
                             hasDefectiveVision: false
                           }));
                         }}
-                        className="mt-0.5 rounded text-ca focus:ring-ca h-3.5 w-3.5 border-slate-300" 
+                        className="mt-0.5 rounded text-ca focus:ring-ca h-3.5 w-3.5 border-slate-300"
                       />
                       <span className="text-xs font-semibold text-slate-800">None of the above</span>
                     </label>
@@ -263,12 +409,12 @@ const Documents = () => {
 
                   {/* Mandatory Legal Declaration Box */}
                   <label className={`flex items-start gap-3 p-3 rounded border transition-all cursor-pointer ${formData.agreesToTerms ? 'bg-emerald-50/40 border-emerald-200' : 'bg-slate-50 border-slate-200'}`}>
-                    <input 
-                      type="checkbox" 
-                      name="agreesToTerms" 
-                      checked={formData.agreesToTerms} 
-                      onChange={handleInputChange} 
-                      className="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4 border-slate-300" 
+                    <input
+                      type="checkbox"
+                      name="agreesToTerms"
+                      checked={formData.agreesToTerms}
+                      onChange={handleInputChange}
+                      className="mt-0.5 rounded text-emerald-600 focus:ring-emerald-500 h-4 w-4 border-slate-300"
                     />
                     <span className="text-[11px] text-slate-700 leading-normal">
                       I declare that I am not prohibited from obtaining a licence and all details provided are true and correct. I realize that a false declaration is punishable by law. <span className="text-rose-500 font-bold">*</span>
@@ -354,8 +500,8 @@ const Documents = () => {
                     onClick={nextStep}
                     disabled={currentStep === 4 && !formData.agreesToTerms}
                     className={`px-4 py-1.5 text-white text-xs font-medium rounded transition-all ${
-                      currentStep === 4 && !formData.agreesToTerms 
-                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-200' 
+                      currentStep === 4 && !formData.agreesToTerms
+                        ? 'bg-slate-200 text-slate-400 cursor-not-allowed border border-slate-200'
                         : 'bg-ca hover:bg-ca-dark'
                     }`}
                   >
